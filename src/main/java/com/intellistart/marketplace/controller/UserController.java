@@ -1,6 +1,7 @@
 package com.intellistart.marketplace.controller;
 
 import com.intellistart.marketplace.dto.UserDTO;
+import com.intellistart.marketplace.model.Product;
 import com.intellistart.marketplace.model.User;
 import com.intellistart.marketplace.service.ProductService;
 import com.intellistart.marketplace.service.UserService;
@@ -10,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,12 +64,23 @@ public class UserController {
     }
 
     @PostMapping("{userId}/products/{productId}")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createProductToUser(@NonNull
             @PathVariable("userId") Long userId,
             @PathVariable("productId") Long productId
             ) {
-        ResponseEntity<?> u = userService.addProduct(userId, productId);
-        return ResponseEntity.ok().body(u);
+        User user = userService.addProduct(userId, productId);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{userId}")
+                .buildAndExpand(user.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(user);
+    }
+
+    @GetMapping("{userId}/products")
+    public ResponseEntity<?> getProductsByUser(@PathVariable("userId") Long userId) {
+        User user = userService.getUserById(userId);
+        List<Product> userProducts = user.getProducts();
+        return ResponseEntity.ok().body(userProducts);
     }
 }

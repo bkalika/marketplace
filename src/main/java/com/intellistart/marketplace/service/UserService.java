@@ -66,19 +66,26 @@ public class UserService implements IUserService, Serializable {
     }
 
     @Override
-    public ResponseEntity<?> addProduct(Long userId, Long productId) {
+    public User addProduct(Long userId, Long productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         Optional<User> userOptional = userRepository.findById(userId);
 
-        User user = userOptional.orElseThrow(() -> new ResourceNotFoundException("The user does not exist\n"));
-        user.getProducts().add(productOptional.orElseThrow(() -> new ResourceNotFoundException("The product does not exist\\n")));
-        userRepository.save(user);
+        Product product = productOptional.orElseThrow(
+                () -> new ResourceNotFoundException("The product does not exist\\n")
+        );
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{userId}")
-                .buildAndExpand(user.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(user);
+        User user = userOptional.orElseThrow(() -> new ResourceNotFoundException("The user does not exist\n"));
+        if(user.getAmountOfMoney() >= product.getPrice()) {
+            user.getProducts().add(product);
+            user.setAmountOfMoney(user.getAmountOfMoney() - product.getPrice());
+            userRepository.save(user);
+
+        } else {
+            throw new ResourceNotFoundException("Not enough amount of money.");
+        }
+
+
+        return user;
     }
 
 }
