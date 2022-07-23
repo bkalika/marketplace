@@ -1,5 +1,6 @@
 package com.intellistart.marketplace.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="usr")
+@JsonIgnoreProperties(value = {"products"})
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +50,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private Long amountOfMoney;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(name = "user_product", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;

@@ -2,6 +2,7 @@ package com.intellistart.marketplace.controller;
 
 import com.intellistart.marketplace.dto.ProductDTO;
 import com.intellistart.marketplace.model.Product;
+import com.intellistart.marketplace.model.User;
 import com.intellistart.marketplace.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +52,12 @@ public class ProductController {
                         Collections.singletonMap("response",
                                 String.format("Product with ID %s deleted successfully!", productId))
                 );
+    }
+
+    @GetMapping("{productId}/users")
+    public ResponseEntity<?> getUsersByProduct(@PathVariable("productId") Long productId) {
+        Product product = productService.getProductById(productId);
+        List<User> users = product.getUsers();
+        return ResponseEntity.ok().body(users);
     }
 }

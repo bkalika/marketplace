@@ -1,12 +1,16 @@
 package com.intellistart.marketplace.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author @bkalika
@@ -16,6 +20,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="product")
+@JsonIgnoreProperties(value = {"users"})
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -42,6 +47,7 @@ public class Product implements Serializable {
     @Column(nullable = false)
     private Long price;
 
-//    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
-//    private Set<User> users;
+    @ManyToMany(mappedBy = "products", cascade = {CascadeType.PERSIST})
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<User> users;
 }
