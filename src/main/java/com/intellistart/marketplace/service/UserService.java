@@ -3,7 +3,9 @@ package com.intellistart.marketplace.service;
 import com.intellistart.marketplace.dto.UserDTO;
 import com.intellistart.marketplace.exception.ResourceNotFoundException;
 import com.intellistart.marketplace.mapper.UserMapper;
+import com.intellistart.marketplace.model.Product;
 import com.intellistart.marketplace.model.User;
+import com.intellistart.marketplace.repository.ProductRepository;
 import com.intellistart.marketplace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,12 @@ import java.util.Optional;
 @Service
 public class UserService implements IUserService, Serializable {
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ProductRepository productRepository) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -54,11 +58,27 @@ public class UserService implements IUserService, Serializable {
 
     @Override
     public void deleteUser(Long userId) {
-        userRepository.findById(userId);
         boolean exists = userRepository.existsById(userId);
         if(!exists) {
             throw new ResourceNotFoundException("The user does not exist\n");
         }
         userRepository.deleteById(userId);
     }
+
+    @Override
+    public ResponseEntity<?> addProduct(Long userId, Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        User user = userOptional.orElseThrow(() -> new ResourceNotFoundException("The user does not exist\n"));
+        user.getProducts().add(productOptional.orElseThrow(() -> new ResourceNotFoundException("The product does not exist\\n")));
+        userRepository.save(user);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{userId}")
+                .buildAndExpand(user.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(user);
+    }
+
 }

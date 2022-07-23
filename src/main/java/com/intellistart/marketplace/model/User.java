@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author @bkalika
@@ -46,4 +47,9 @@ public class User implements Serializable {
     @ColumnDefault("0")
     @Column(nullable = false)
     private Long amountOfMoney;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "user_product", joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<Product> products;
 }

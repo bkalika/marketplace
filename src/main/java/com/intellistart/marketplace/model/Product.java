@@ -17,7 +17,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="product")
-@JsonIgnoreProperties(value = {"user"})
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -43,4 +42,7 @@ public class Product implements Serializable {
     @ColumnDefault("1")
     @Column(nullable = false)
     private Long price;
+
+//    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+//    private Set<User> users;
 }

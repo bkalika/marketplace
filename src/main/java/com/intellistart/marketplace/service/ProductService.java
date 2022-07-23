@@ -4,7 +4,9 @@ import com.intellistart.marketplace.dto.ProductDTO;
 import com.intellistart.marketplace.exception.ResourceNotFoundException;
 import com.intellistart.marketplace.mapper.ProductMapper;
 import com.intellistart.marketplace.model.Product;
+import com.intellistart.marketplace.model.User;
 import com.intellistart.marketplace.repository.ProductRepository;
+import com.intellistart.marketplace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,11 +60,11 @@ public class ProductService implements IProductService, Serializable {
 
     @Override
     public void deleteProduct(Long productId) {
-        productRepository.findById(productId);
         boolean exists = productRepository.existsById(productId);
         if(!exists) {
             throw new ResourceNotFoundException("The product does not exists!\n");
         }
         productRepository.deleteById(productId);
     }
+
 }

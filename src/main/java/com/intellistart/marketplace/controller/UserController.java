@@ -2,8 +2,11 @@ package com.intellistart.marketplace.controller;
 
 import com.intellistart.marketplace.dto.UserDTO;
 import com.intellistart.marketplace.model.User;
+import com.intellistart.marketplace.service.ProductService;
 import com.intellistart.marketplace.service.UserService;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +25,12 @@ import java.util.List;
 @Validated
 public class UserController {
     private final UserService userService;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ProductService productService) {
         this.userService = userService;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -53,5 +58,15 @@ public class UserController {
                         Collections.singletonMap("response",
                                 String.format("User with ID %s deleted successfully!", userId))
                 );
+    }
+
+    @PostMapping("{userId}/products/{productId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> createProductToUser(@NonNull
+            @PathVariable("userId") Long userId,
+            @PathVariable("productId") Long productId
+            ) {
+        ResponseEntity<?> u = userService.addProduct(userId, productId);
+        return ResponseEntity.ok().body(u);
     }
 }

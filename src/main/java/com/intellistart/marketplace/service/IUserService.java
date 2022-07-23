@@ -1,6 +1,7 @@
 package com.intellistart.marketplace.service;
 
 import com.intellistart.marketplace.dto.UserDTO;
+import com.intellistart.marketplace.model.Product;
 import com.intellistart.marketplace.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -18,4 +19,5 @@ public interface IUserService {
     User getUserById(Long userId);
     ResponseEntity<?> addUser(UserDTO userDTO);
     void deleteUser(Long userId);
+    ResponseEntity<?> addProduct(Long userId, Long productId);
 }
