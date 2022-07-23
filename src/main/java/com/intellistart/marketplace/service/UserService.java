@@ -8,13 +8,10 @@ import com.intellistart.marketplace.model.User;
 import com.intellistart.marketplace.repository.ProductRepository;
 import com.intellistart.marketplace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,14 +43,10 @@ public class UserService implements IUserService, Serializable {
     }
 
     @Override
-    public ResponseEntity<?> addUser(@Valid UserDTO userDTO) {
+    public User addUser(@Valid UserDTO userDTO) {
         User user = UserMapper.DtoToEntity(userDTO);
         user = userRepository.save(user);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{userId}")
-                .buildAndExpand(user.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(user);
+        return user;
     }
 
     @Override

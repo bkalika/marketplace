@@ -6,12 +6,9 @@ import com.intellistart.marketplace.mapper.ProductMapper;
 import com.intellistart.marketplace.model.Product;
 import com.intellistart.marketplace.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,18 +39,14 @@ public class ProductService implements IProductService, Serializable {
     }
 
     @Override
-    public ResponseEntity<?> addProduct(ProductDTO productDTO) {
+    public Product addProduct(ProductDTO productDTO) {
         Optional<Product> productOptional = productRepository.findByName(productDTO.getName());
         if(productOptional.isPresent()) {
             throw new ResourceNotFoundException("Product with this name has already exists! Enter another one!");
         }
         Product product = ProductMapper.DtoToEntity(productDTO);
         product = productRepository.save(product);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{productId}")
-                .buildAndExpand(product.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(product);
+        return product;
     }
 
     @Override

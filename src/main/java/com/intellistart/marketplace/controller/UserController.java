@@ -45,8 +45,12 @@ public class UserController {
 
     @PostMapping
     ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
-        ResponseEntity<?> user = userService.addUser(userDTO);
-        return ResponseEntity.ok().body(user);
+        User user = userService.addUser(userDTO);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{userId}")
+                .buildAndExpand(user)
+                .toUri();
+        return ResponseEntity.created(location).body(user);
     }
 
     @DeleteMapping(path = "{userId}")
@@ -60,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("{userId}/products/{productId}")
-    public ResponseEntity<?> createProductToUser(@NonNull
+    public ResponseEntity<?> addProductToUser(@NonNull
             @PathVariable("userId") Long userId,
             @PathVariable("productId") Long productId
             ) {

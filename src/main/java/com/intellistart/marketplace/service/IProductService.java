@@ -16,6 +16,6 @@ import java.util.List;
 public interface IProductService {
     List<Product> getProducts();
     Product getProductById(Long productId);
-    ResponseEntity<?> addProduct(ProductDTO productDTO);
+    Product addProduct(ProductDTO productDTO);
     void deleteProduct(Long productId);
 }

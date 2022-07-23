@@ -7,8 +7,10 @@ import com.intellistart.marketplace.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,8 +42,12 @@ public class ProductController {
 
     @PostMapping
     ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO) {
-        ResponseEntity<?> product = productService.addProduct(productDTO);
-        return ResponseEntity.ok().body(product);
+        Product product = productService.addProduct(productDTO);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{productId}")
+                .buildAndExpand(product.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(product);
     }
 
     @DeleteMapping(path = "{productId}")
